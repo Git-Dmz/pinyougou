@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>双向绑定</title>
+
+    <script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
+    <script type="text/javascript">
+        function show() {
+            var name = document.getElementById("name").value;
+            document.getElementById("spanName").innerHTML=name;
+        }
+    </script>
+</head>
+<body ng-app="">
+
+<input id="name" onkeyup="show()" >
+<br/>
+您输入的是：<span id="spanName"></span>
+<br/>
+<input ng-model="myName">
+姓名：{{myName}}
+
+
+</body>
+</html>

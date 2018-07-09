@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
+    <script type="text/javascript">
+        var model = angular.module("model", []);
+        model.controller("controller", function ($scope) {
+            $scope.add=function () {
+                $scope.c = parseInt($scope.a) + parseInt($scope.b)
+            }
+        })
+    </script>
+</head>
+<body ng-app="model" ng-controller="controller">
+<input ng-model="a"> + <input ng-model="b"> <button ng-click="add()">等于</button> <input ng-model="c">
+</body>
+</html>

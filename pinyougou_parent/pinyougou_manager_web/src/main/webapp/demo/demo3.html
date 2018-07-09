@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
+    <script type="text/javascript">
+        function myController($scope) {
+            $scope.user={name:"陈勇",age:"38"}
+        }
+    </script>
+</head>
+<body ng-app ng-controller="myController">
+    {{user.name}}
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
+    <script>
+    var myModel = angular.module("myModel", []);
+    myModel.controller('myController',function($scope) {
+    $scope.list=[111,222,333,444,555];
+    $scope.user=[{name:"AAA"},{name:"BBB"},{name:"CCC"}]
+    })
+    </script>
+</head>
+<body ng-app="myModel" ng-controller="myController">
+
+<div ng-repeat="xx in list">
+    {{xx}}
+</div>
+
+<div ng-repeat="pojo in user">
+{{pojo.name}}
+</div>
+</body>
+</html>
