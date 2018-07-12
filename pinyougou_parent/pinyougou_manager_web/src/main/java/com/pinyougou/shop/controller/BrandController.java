@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("brand")
@@ -24,14 +25,19 @@ public class BrandController {
         return service.findAll();
     }
 
+    @RequestMapping("findBrandList")
+    public List<Map> findBrandList() {
+        return service.findBrandList();
+    }
+
     @RequestMapping("findPage/{pageNum}/{pageSize}")
     public PageResult findPage(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize) {
         return service.findPage(pageNum, pageSize);
     }
 
     @RequestMapping("search/{pageNum}/{pageSize}")
-    public PageResult search(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize,@RequestBody TbBrand brand) {
-        return service.search(pageNum, pageSize , brand);
+    public PageResult search(@PathVariable("pageNum") int pageNum, @PathVariable("pageSize") int pageSize, @RequestBody TbBrand brand) {
+        return service.search(pageNum, pageSize, brand);
     }
 
     @RequestMapping("add")
@@ -46,28 +52,29 @@ public class BrandController {
     }
 
     @RequestMapping("findOne/{id}")
-    public TbBrand findOne(@PathVariable("id") Long id){
-       return service.findOne(id);
+    public TbBrand findOne(@PathVariable("id") Long id) {
+        return service.findOne(id);
     }
 
     @RequestMapping("update")
     public Result update(@RequestBody TbBrand brand) {
         try {
             service.update(brand);
-            return new Result(true,"修改成功");
+            return new Result(true, "修改成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(false,"修改失败");
+            return new Result(false, "修改失败");
         }
     }
+
     @RequestMapping("del/{ids}")
     public Result del(@PathVariable Long[] ids) {
         try {
             service.del(ids);
-            return new Result(true,"删除成功");
+            return new Result(true, "删除成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return new Result(false,"删除失败");
+            return new Result(false, "删除失败");
         }
     }
 }

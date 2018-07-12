@@ -6,6 +6,7 @@ import entity.Result;
 import sun.jvm.hotspot.debugger.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BrandService {
     List<TbBrand> findAll();
@@ -21,4 +22,7 @@ public interface BrandService {
     void del(Long[] ids);
 
     PageResult search(int pageNum, int pageSize, TbBrand brand);
+
+    List<Map> findBrandList();
+
 }
