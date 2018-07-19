@@ -25,7 +25,19 @@ public class GoodsController {
     public Result updateMarketable(@PathVariable("ids") Long[] ids ,@PathVariable("market") String market){
         try {
             goodsService.updateMarketable(ids,market);
-            return new Result(true,"");
+            return new Result(true,"修改成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false,"修改失败");
+        }
+    }
+
+    //更改删除状态
+    @RequestMapping("updateIsDelete/{ids}/{del}")
+    public Result updateIsDelete(@PathVariable("ids") Long[] ids ,@PathVariable("del") String del){
+        try {
+            goodsService.updateIsDelete(ids,del);
+            return new Result(true,"修改成功");
         } catch (Exception e) {
             e.printStackTrace();
             return new Result(false,"修改失败");
@@ -114,9 +126,9 @@ public class GoodsController {
      * @param
      * @return
      */
-
     @RequestMapping("/search/{pageNum}/{pageSize}")
     public PageResult search(@RequestBody TbGoods goods, @PathVariable("pageNum") int pageNum,@PathVariable("pageSize") int pageSize ){
+        goods.setSellerId(SecurityContextHolder.getContext().getAuthentication().getName());
         return goodsService.search(goods, pageNum, pageSize);
     }
 }

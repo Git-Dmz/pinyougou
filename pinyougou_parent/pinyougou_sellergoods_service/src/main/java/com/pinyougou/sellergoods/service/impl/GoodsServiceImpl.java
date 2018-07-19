@@ -185,7 +185,7 @@ public class GoodsServiceImpl implements GoodsService {
                 criteria.andAuditStatusLike("%"+goods.getAuditStatus()+"%");
             }
             if(goods.getIsMarketable()!=null && goods.getIsMarketable().length()>0){
-                criteria.andIsMarketableEqualTo(goods.getIsMarketable());
+                criteria.andIsMarketableLike(goods.getIsMarketable());
             }
             if(goods.getCaption()!=null && goods.getCaption().length()>0){
                 criteria.andCaptionLike("%"+goods.getCaption()+"%");
@@ -208,7 +208,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public void updateAuditStatus(Long[] ids, String status) {
-
+        //审核状态：0=未审核，1=审核通过，2=审核未通过，3=关闭
         for (Long id : ids) {
             TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
             tbGoods.setAuditStatus(status);
@@ -218,9 +218,20 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public void updateMarketable(Long[] ids, String market) {
+        //上下架状态：0=未上架，1=上架，2=下架
         for (Long id : ids) {
             TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
             tbGoods.setIsMarketable(market);
+            goodsMapper.updateByPrimaryKey(tbGoods);
+        }
+    }
+
+    @Override
+    public void updateIsDelete(Long[] ids, String del) {
+        //删除状态：0=未删除，1=删除
+        for (Long id : ids) {
+            TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
+            tbGoods.setIsDelete(del);
             goodsMapper.updateByPrimaryKey(tbGoods);
         }
     }

@@ -53,9 +53,11 @@ public interface GoodsService {
      * @param pageSize 每页记录数
      * @return
      */
-    public PageResult search(TbGoods goods, int pageNum, int pageSize);
+    PageResult search(TbGoods goods, int pageNum, int pageSize);
 
     void updateAuditStatus(Long[] ids, String status);
 
     void updateMarketable(Long[] ids, String market);
+
+    void updateIsDelete(Long[] ids, String del);
 }
