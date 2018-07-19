@@ -23,10 +23,10 @@ app.controller("baseController", function ($scope) {
     $scope.selectKey = function ($event, id) {
         // $event用于判断复选框的勾选状态
         if ($event.target.checked) {
-            $scope.Ids.push(id)
+            $scope.Ids.push(id)//向数组中放数据
         } else {
             var index = $scope.Ids.indexOf(id);
-            $scope.Ids.splice(index, 1)
+            $scope.Ids.splice(index, 1)//从数组中移除数据
         }
     }
 });

@@ -33,13 +33,13 @@ public class TypeTemplateServiceImpl implements TypeTemplateService {
 
 
 	@Override
-	public List<Map> findBySpecId(Long id) {
+	public List<Map> findSpecList(Long id) {
         //根据模板ID查询
 		TbTypeTemplate tbTypeTemplate = typeTemplateMapper.selectByPrimaryKey(id);
 		//得到的数据为字符串类型："[{"id":27,"text":"网络"},{"id":32,"text":"机身内存"}]"
 		String specIds = tbTypeTemplate.getSpecIds();
 		//通过 JSON.parseArray 将字符串转换成List<Map>形式
-		List<Map> maps = com.alibaba.fastjson.JSON.parseArray(specIds, Map.class);
+		List<Map> maps = JSON.parseArray(specIds, Map.class);
 		//遍历
 		for (Map map : maps) {
 			TbSpecificationOptionExample example = new TbSpecificationOptionExample();

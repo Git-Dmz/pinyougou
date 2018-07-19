@@ -111,7 +111,7 @@ app.controller('itemCatController', function ($scope, typeTemplateService, itemC
     //批量删除
     $scope.del = function () {
         //获取选中的复选框
-        itemCatService.del($scope.selectIds).success(
+        itemCatService.del($scope.Ids).success(
             function (response) {
                 if (response.success) {
                     $scope.reloadList();//刷新列表

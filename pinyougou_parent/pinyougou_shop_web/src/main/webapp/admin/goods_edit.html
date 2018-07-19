@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../js/service/itemCatService.js"></script>
     <script type="text/javascript" src="../js/service/uploadService.js"></script>
     <script type="text/javascript" src="../js/service/typeTemplateService.js"></script>
-    <script type="text/javascript" src="../js/service/goodsService.js"></script>
-    <script type="text/javascript" src="../js/controller/goodsController.js"></script>
+    <script type="text/javascript" src="../js/service/goodsListService.js"></script>
+    <script type="text/javascript" src="../js/controller/goodsListService.js"></script>
 
 
 </head>
@@ -165,7 +165,7 @@
                                     <img alt="" src="{{image.url}}" width="100px" height="100px">
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-default" ng-click="delItemImageToImage()"
+                                    <button type="button" class="btn btn-default" ng-click="delItemImageToImages()"
                                             title="删除"><i class="fa fa-trash-o"></i> 删除
                                     </button>
                                 </td>
@@ -214,12 +214,14 @@
                                 </div>
                             </div>
                         </div>
+
                         <div class="row data-type">
                             <table class="table table-bordered table-striped table-hover dataTable">
                                 <thead>
                                 <tr>
-                                    <th class="sorting">屏幕尺寸</th>
-                                    <th class="sorting">网络制式</th>
+                                    <!--[{"attributeName":"主要材质","attributeValue":["蚕丝","羊毛"]},
+                                    {"attributeName":"风格","attributeValue":["商务正装"]}]-->
+                                    <th class="sorting" ng-repeat="specification in entity.tbGoodsDesc.specificationItems">{{specification.attributeName}}</th>
                                     <th class="sorting">价格</th>
                                     <th class="sorting">库存</th>
                                     <th class="sorting">是否启用</th>
@@ -227,95 +229,36 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td>
-                                        4.0
-                                    </td>
-                                    <td>
-                                        3G
-                                    </td>
-                                    <td>
-                                        <input class="form-control" placeholder="价格">
-                                    </td>
-                                    <td>
-                                        <input class="form-control" placeholder="库存数量">
-                                    </td>
-                                    <td>
-                                        <input type="checkbox">
-                                    </td>
-                                    <td>
-                                        <input type="checkbox">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        4.0
-                                    </td>
-                                    <td>
-                                        4G
-                                    </td>
-                                    <td>
-                                        <input class="form-control" placeholder="价格">
-                                    </td>
-                                    <td>
-                                        <input class="form-control" placeholder="库存数量">
-                                    </td>
-                                    <td>
-                                        <input type="checkbox">
-                                    </td>
-                                    <td>
-                                        <input type="checkbox">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        5.0
-                                    </td>
-                                    <td>
-                                        3G
-                                    </td>
-                                    <td>
-                                        <input class="form-control" placeholder="价格">
-                                    </td>
-                                    <td>
-                                        <input class="form-control" placeholder="库存数量">
-                                    </td>
-                                    <td>
-                                        <input type="checkbox">
-                                    </td>
-                                    <td>
-                                        <input type="checkbox">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        5.0
-                                    </td>
-                                    <td>
-                                        4G
-                                    </td>
-                                    <td>
-                                        <input class="form-control" placeholder="价格">
-                                    </td>
-                                    <td>
-                                        <input class="form-control" placeholder="库存数量">
-                                    </td>
-                                    <td>
-                                        <input type="checkbox">
-                                    </td>
-                                    <td>
-                                        <input type="checkbox">
-                                    </td>
-                                </tr>
+                                <!--entity.itemList = [{"spec":{"主要材质":"蚕丝","风格":"商务正装"},"price":0,"num":9999,"status":"1","isDefault":"0"},-->
+                                <!--{"spec":{"主要材质":"羊毛","风格":"商务正装"},"price":0,"num":9999,"status":"1","isDefault":"0"}]-->
+                                <tr ng-repeat="pojo in entity.tbItemList">
+                                    <!--pojo = {"spec":{"主要材质":"羊毛","风格":"商务正装"},"price":0,"num":9999,"status":"1","isDefault":"0"}-->
 
+                                    <!--{"attributeName":"主要材质","attributeValue":["蚕丝","羊毛"]}-->
+                                    <td ng-repeat="specification in entity.tbGoodsDesc.specificationItems">
+                                        <!--pojo.spec得到spec对象，根据pojo的数据格式得知，spec的存储方式是key：value的形式
+                                            而pojo自己是拿不到所需要的key值的，但是specification可以取到pojo所需要的key。
+                                            所以此处pojo.spec[specification.attributeName]-->
+                                        {{pojo.spec[specification.attributeName]}}
+                                    </td>
+                                    <td>
+                                        <input class="form-control" ng-model="pojo.price" placeholder="价格">
+                                    </td>
+                                    <td>
+                                        <input class="form-control" ng-model="pojo.num" placeholder="库存数量">
+                                    </td>
+                                    <td>
+                                        <input ng-model="pojo.status" ng-true-value="1" ng-false-value="0" type="checkbox">
+                                    </td>
+                                    <td>
+                                        <input ng-model="pojo.isDefault" ng-true-value="1" ng-false-value="0" type="checkbox">
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
-
                         </div>
-
                     </div>
                 </div>
-
             </div>
             <!--tab内容/-->
             <!--表单内容/-->

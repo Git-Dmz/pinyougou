@@ -25,9 +25,9 @@ public class TypeTemplateController {
     @Reference
     private TypeTemplateService typeTemplateService;
 
-    @RequestMapping("findBySpecId/{id}")
-    public List<Map> findBySpecId(@PathVariable("id") Long id){
-        return typeTemplateService.findBySpecId(id);
+    @RequestMapping("findSpecList/{id}")
+    public List<Map> findSpecList(@PathVariable("id") Long id){
+        return typeTemplateService.findSpecList(id);
     }
 
 

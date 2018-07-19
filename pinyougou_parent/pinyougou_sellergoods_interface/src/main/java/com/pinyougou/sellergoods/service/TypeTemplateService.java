@@ -60,5 +60,5 @@ public interface TypeTemplateService {
 	 */
 	 PageResult search(TbTypeTemplate typeTemplate, int pageNum, int pageSize);
 
-    List<Map> findBySpecId(Long id);
+    List<Map> findSpecList(Long id);
 }

@@ -1,8 +1,8 @@
 //服务层
 app.service('typeTemplateService',function($http){
 
-	this.findBySpecId=function (id) {
-        return $http.get('../typeTemplate/findBySpecId/' + id);
+	this.findSpecList=function (id) {
+        return $http.get('../typeTemplate/findSpecList/' + id);
     };
 
 	//读取列表数据绑定到表单中

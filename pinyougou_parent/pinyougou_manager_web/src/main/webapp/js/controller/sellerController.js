@@ -55,7 +55,7 @@ app.controller('sellerController' ,function($scope,$controller   ,sellerService)
 	//批量删除 
 	$scope.del=function(){			
 		//获取选中的复选框			
-		sellerService.del( $scope.selectIds ).success(
+		sellerService.del( $scope.Ids ).success(
 			function(response){
 				if(response.success){
 					$scope.reloadList();//刷新列表
