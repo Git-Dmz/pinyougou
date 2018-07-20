@@ -114,6 +114,7 @@ app.controller('itemCatController', function ($scope, typeTemplateService, itemC
         itemCatService.del($scope.Ids).success(
             function (response) {
                 if (response.success) {
+                    $scope.Ids=[];
                     $scope.reloadList();//刷新列表
                 }
             }

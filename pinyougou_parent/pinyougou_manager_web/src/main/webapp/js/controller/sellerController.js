@@ -58,6 +58,7 @@ app.controller('sellerController' ,function($scope,$controller   ,sellerService)
 		sellerService.del( $scope.Ids ).success(
 			function(response){
 				if(response.success){
+                    $scope.Ids=[];
 					$scope.reloadList();//刷新列表
 				}						
 			}		
