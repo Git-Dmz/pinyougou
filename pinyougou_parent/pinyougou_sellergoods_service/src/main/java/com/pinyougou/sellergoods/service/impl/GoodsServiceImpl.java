@@ -10,11 +10,16 @@ import com.pinyougou.sellergoods.service.GoodsService;
 import entity.PageResult;
 import entityGroup.Goods;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+
+import java.util.*;
 
 @Service
 public class GoodsServiceImpl implements GoodsService {
@@ -41,6 +46,7 @@ public class GoodsServiceImpl implements GoodsService {
 
         tbGoods.setAuditStatus("0");
         tbGoods.setIsMarketable("0");
+        tbGoods.setIsDelete("0");
         goodsMapper.insert(tbGoods);
 
         TbGoodsDesc tbGoodsDesc = goods.getTbGoodsDesc();
@@ -123,17 +129,78 @@ public class GoodsServiceImpl implements GoodsService {
     /**
      * 根据ID获取实体
      *
-     * @param id
      * @return
      */
     @Override
-    public TbGoods findOne(Long id) {
-        return goodsMapper.selectByPrimaryKey(id);
+    public Goods findOne(Long goodsId) {
+        Goods goods = new Goods();
+        TbGoods tbGoods = goodsMapper.selectByPrimaryKey(goodsId);
+        Map map = new HashMap();
+        String category1 = itemCatMapper.selectByPrimaryKey(tbGoods.getCategory1Id()).getName();
+        String category2 = itemCatMapper.selectByPrimaryKey(tbGoods.getCategory2Id()).getName();
+        String category3 = itemCatMapper.selectByPrimaryKey(tbGoods.getCategory3Id()).getName();
+        map.put("category1", category1);
+        map.put("category2", category2);
+        map.put("category3", category3);
+        goods.setCatMap(map);
+        goods.setTbGoods(tbGoods);
+        TbGoodsDesc tbGoodsDesc = tbGoodsDescMapper.selectByPrimaryKey(goodsId);
+        goods.setTbGoodsDesc(tbGoodsDesc);
+        TbItemExample example = new TbItemExample();
+        example.createCriteria().andGoodsIdEqualTo(goodsId);
+        List<TbItem> itemList = itemMapper.selectByExample(example);
+        goods.setTbItemList(itemList);
+        return goods;
     }
 
     /**
-     * 查询全部
+     * 查询全部Goods
      */
+    @Override
+    public List<Goods> findAllGoods() {
+        List<Goods> goodsList = new ArrayList<>();
+        List<TbGoods> tbGoods = goodsMapper.selectByExample(null);
+        Map map = new HashMap();
+        //节省栈内存
+        Goods good = null;
+        for (TbGoods tbGood : tbGoods) {
+            //new对象需要写在循环内，不然引用的是同一个地址 会覆盖掉之前所有循环的数据
+            good = new Goods();
+            String category1 = itemCatMapper.selectByPrimaryKey(tbGood.getCategory1Id()).getName();
+            String category2 = itemCatMapper.selectByPrimaryKey(tbGood.getCategory2Id()).getName();
+            String category3 = itemCatMapper.selectByPrimaryKey(tbGood.getCategory3Id()).getName();
+            map.put("category1", category1);
+            map.put("category2", category2);
+            map.put("category3", category3);
+            good.setCatMap(map);
+            good.setTbGoods(tbGood);
+
+            TbGoodsDesc tbGoodsDesc = tbGoodsDescMapper.selectByPrimaryKey(tbGood.getId());
+            good.setTbGoodsDesc(tbGoodsDesc);
+
+            TbItemExample example = new TbItemExample();
+            example.createCriteria().andGoodsIdEqualTo(tbGoodsDesc.getGoodsId());
+            List<TbItem> itemList = itemMapper.selectByExample(example);
+            good.setTbItemList(itemList);
+
+            goodsList.add(good);
+        }
+        return goodsList;
+
+        /**
+         * 讲师生成所有静态文件的方式
+         List<Goods> goodsList = new ArrayList<>();
+         List<TbGoods> tbGoods = goodsMapper.selectByExample(null);
+         for (TbGoods tbGood : tbGoods) {
+         goodsList.add(findOne(tbGood.getId()));
+         }
+         goodsList.add(good);
+         return goodsList;
+         */
+
+
+    }
+
     @Override
     public List<TbGoods> findAll() {
         return goodsMapper.selectByExample(null);
@@ -145,7 +212,7 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public PageResult findPage(int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        Page<TbGoods> page=   (Page<TbGoods>) goodsMapper.selectByExample(null);
+        Page<TbGoods> page = (Page<TbGoods>) goodsMapper.selectByExample(null);
         return new PageResult(page.getTotal(), page.getResult());
     }
 
@@ -153,7 +220,7 @@ public class GoodsServiceImpl implements GoodsService {
      * 修改
      */
     @Override
-    public void update(TbGoods goods){
+    public void update(TbGoods goods) {
         goodsMapper.updateByPrimaryKey(goods);
     }
 
@@ -162,7 +229,7 @@ public class GoodsServiceImpl implements GoodsService {
      */
     @Override
     public void del(Long[] ids) {
-        for(Long id:ids){
+        for (Long id : ids) {
             goodsMapper.deleteByPrimaryKey(id);
         }
     }
@@ -171,38 +238,38 @@ public class GoodsServiceImpl implements GoodsService {
     public PageResult search(TbGoods goods, int pageNum, int pageSize) {
         PageHelper.startPage(pageNum, pageSize);
 
-        TbGoodsExample example=new TbGoodsExample();
+        TbGoodsExample example = new TbGoodsExample();
         TbGoodsExample.Criteria criteria = example.createCriteria();
 
-        if(goods!=null){
-            if(goods.getSellerId()!=null && goods.getSellerId().length()>0){
+        if (goods != null) {
+            if (goods.getSellerId() != null && goods.getSellerId().length() > 0) {
                 criteria.andSellerIdEqualTo(goods.getSellerId());
             }
-            if(goods.getGoodsName()!=null && goods.getGoodsName().length()>0){
-                criteria.andGoodsNameLike("%"+goods.getGoodsName()+"%");
+            if (goods.getGoodsName() != null && goods.getGoodsName().length() > 0) {
+                criteria.andGoodsNameLike("%" + goods.getGoodsName() + "%");
             }
-            if(goods.getAuditStatus()!=null && goods.getAuditStatus().length()>0){
-                criteria.andAuditStatusLike("%"+goods.getAuditStatus()+"%");
+            if (goods.getAuditStatus() != null && goods.getAuditStatus().length() > 0) {
+                criteria.andAuditStatusEqualTo(goods.getAuditStatus());
             }
-            if(goods.getIsMarketable()!=null && goods.getIsMarketable().length()>0){
+            if (goods.getIsMarketable() != null && goods.getIsMarketable().length() > 0) {
                 criteria.andIsMarketableLike(goods.getIsMarketable());
             }
-            if(goods.getCaption()!=null && goods.getCaption().length()>0){
-                criteria.andCaptionLike("%"+goods.getCaption()+"%");
+            if (goods.getCaption() != null && goods.getCaption().length() > 0) {
+                criteria.andCaptionLike("%" + goods.getCaption() + "%");
             }
-            if(goods.getSmallPic()!=null && goods.getSmallPic().length()>0){
-                criteria.andSmallPicLike("%"+goods.getSmallPic()+"%");
+            if (goods.getSmallPic() != null && goods.getSmallPic().length() > 0) {
+                criteria.andSmallPicLike("%" + goods.getSmallPic() + "%");
             }
-            if(goods.getIsEnableSpec()!=null && goods.getIsEnableSpec().length()>0){
-                criteria.andIsEnableSpecLike("%"+goods.getIsEnableSpec()+"%");
+            if (goods.getIsEnableSpec() != null && goods.getIsEnableSpec().length() > 0) {
+                criteria.andIsEnableSpecLike("%" + goods.getIsEnableSpec() + "%");
             }
-            if(goods.getIsDelete()!=null && goods.getIsDelete().length()>0){
-                criteria.andIsDeleteLike("%"+goods.getIsDelete()+"%");
+            if (goods.getIsDelete() != null && goods.getIsDelete().length() > 0) {
+                criteria.andIsDeleteEqualTo(goods.getIsDelete());
             }
 
         }
 
-        Page<TbGoods> page= (Page<TbGoods>)goodsMapper.selectByExample(example);
+        Page<TbGoods> page = (Page<TbGoods>) goodsMapper.selectByExample(example);
         return new PageResult(page.getTotal(), page.getResult());
     }
 
@@ -216,10 +283,36 @@ public class GoodsServiceImpl implements GoodsService {
         }
     }
 
+    @Autowired
+    private JmsTemplate jmsTemplate;
+    @Autowired
+    @Qualifier("queue_market_solr_spu")
+    private Destination queue_market_solr_spu;
+    @Autowired
+    @Qualifier("queue_offMarket_solr_spu")
+    private Destination queue_offMarket_solr_spu;
+
     @Override
     public void updateMarketable(Long[] ids, String market) {
         //上下架状态：0=未上架，1=上架，2=下架
+
         for (Long id : ids) {
+            if ("1".equals(market)) {
+                jmsTemplate.send(queue_market_solr_spu, new MessageCreator() {
+                    @Override
+                    public Message createMessage(Session session) throws JMSException {
+                        return session.createTextMessage(id.toString());
+                    }
+                });
+            } else {
+                jmsTemplate.send(queue_offMarket_solr_spu, new MessageCreator() {
+                    @Override
+                    public Message createMessage(Session session) throws JMSException {
+                        return session.createTextMessage(id.toString());
+                    }
+                });
+            }
+
             TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
             tbGoods.setIsMarketable(market);
             goodsMapper.updateByPrimaryKey(tbGoods);

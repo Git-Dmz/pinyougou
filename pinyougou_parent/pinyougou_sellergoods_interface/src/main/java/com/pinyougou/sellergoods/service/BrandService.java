@@ -2,8 +2,6 @@ package com.pinyougou.sellergoods.service;
 
 import com.pinyougou.pojo.TbBrand;
 import entity.PageResult;
-import entity.Result;
-import sun.jvm.hotspot.debugger.Page;
 
 import java.util.List;
 import java.util.Map;

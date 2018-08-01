@@ -38,7 +38,7 @@ public interface GoodsService {
      * @param id
      * @return
      */
-    public TbGoods findOne(Long id);
+    public Goods findOne(Long id);
 
 
     /**
@@ -60,4 +60,6 @@ public interface GoodsService {
     void updateMarketable(Long[] ids, String market);
 
     void updateIsDelete(Long[] ids, String del);
+
+    List<Goods> findAllGoods();
 }
